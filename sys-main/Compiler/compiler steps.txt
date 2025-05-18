@@ -1,0 +1,20 @@
+steps: 
+
+1. open terminal
+
+2. create a file with command : vim test.l
+
+3. by pressing 'i',  go to the insert mode
+
+4. write the code inside the file (paste by ctrl + shift + v)
+
+5. after writing, press 'esc' key and type ':wq' and press enter to save and exit the file
+
+6. now compile the lex code by typing in the terminal :  "lex test.l"
+
+7. now compile the c file using gcc, type : " gcc lex.yy.c -o test -ll "
+
+8. now run the code : ' ./test '
+
+
+now test it

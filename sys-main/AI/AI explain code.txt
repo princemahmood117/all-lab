@@ -1,0 +1,555 @@
+
+
+1. sum and multiplication
+
+addmul(X, Y) :-
+    S is X + Y,
+    M is X * Y,
+    write('Addition is: '), write(S), nl,
+    write('Multiplication is: '), write(M).
+
+% Sample Query:
+% ?- addmul(3, 2).
+
+
+2. sum of number
+
+sum_list([], 0).
+sum_list([H|T], Sum) :-
+    sum_list(T, Sum1),
+    Sum is H + Sum1.
+
+% Sample query:
+% ?- sum_list([1, 2, 3, 4, 5], Sum).
+
+
+3. max-min
+
+max_list([X], X).
+max_list([H|T], Max) :-
+    max_list(T, MaxT),
+    Max is max(H, MaxT).
+
+min_list([X], X).
+min_list([H|T], Min) :-
+    min_list(T, MinT),
+    Min is min(H, MinT).
+
+% Sample queries:
+% ?- max_list([1, 2, 3, 4], Max).
+% ?- min_list([1, 2, 3, 4], Min).
+
+
+4. count list
+
+count([], 0).
+count([_|T], N) :-
+    count(T, N1),
+    N is N1 + 1.
+
+% Sample query:
+% ?- count([a, b, c, d], N).
+
+
+5. member list
+
+member(X, [X|_]).  
+member(X, [_|T]) :-  
+    member(X, T).
+
+% Sample query:
+% ?- member(3, [1, 2, 3, 4, 5]).
+
+
+6. reverse list
+
+reverse([], []).  
+reverse([H|T], R) :-  
+    reverse(T, RevT),  
+    append(RevT, [H], R).
+
+% Sample query:
+% ?- reverse([1, 2, 3, 4, 5], R).
+
+
+7. union-intersect
+
+% Union of two lists
+union([], L, L).
+
+union([H|T], L, [H|U]) :-
+    \+ member(H, L),
+    union(T, L, U).
+
+union([H|T], L, U) :-
+    member(H, L),
+    union(T, L, U).
+
+
+% Intersection of two lists
+intersection([], _, []).
+
+intersection([H|T], L, [H|I]) :-
+    member(H, L),
+    intersection(T, L, I).
+
+intersection([H|T], L, I) :-
+    \+ member(H, L),
+    intersection(T, L, I).
+
+
+% Sample queries:
+% ?- union([1, 2, 3], [3, 4, 5], Union).
+% ?- intersection([1, 2, 3], [3, 4, 5], Intersection).
+
+
+8. GDC
+
+% GCD of two numbers
+gcd(A, 0, A) :-
+    A > 0.
+
+gcd(A, B, G) :-
+    B > 0,
+    R is A mod B,
+    gcd(B, R, G).
+
+
+% Sample query:
+% ?- gcd(48, 18, GCD).
+
+
+9. odd-even
+
+even(X) :- X mod 2 =:= 0.
+
+odd(X) :- X mod 2 =\= 0.
+
+% Sample query:
+% ?- even(4).
+% ?- odd(5).
+
+
+10. four-queens
+
+% Define the 4-Queens solution
+fourQueens(Q1, Q2, Q3, Q4) :-
+    permutation([1, 2, 3, 4], [Q1, Q2, Q3, Q4]),
+    safe([Q1/1, Q2/2, Q3/3, Q4/4]).
+
+safe([]).
+
+% Recursive case: Check if a queen is safe with the rest
+safe([Queen/Col | Others]) :-
+    safe(Others),
+    not(attacks(Queen, Col, Others)).
+
+% Check if a queen attacks any other queen
+attacks(Queen, Col, [OtherQueen/OtherCol | _]) :-
+    abs(Queen - OtherQueen) =:= abs(Col - OtherCol).
+
+attacks(Queen, Col, [_ | Rest]) :-
+    attacks(Queen, Col, Rest).
+
+% Find all solutions
+solveFourQueens :-
+    fourQueens(Q1, Q2, Q3, Q4),
+    write('Solution: ['),
+    write(Q1), write(', '),
+    write(Q2), write(', '),
+    write(Q3), write(', '),
+    write(Q4),
+    write(']'), nl,
+    fail.
+
+% Sample Query
+% ?- solveFourQueens.
+
+
+
+11. eight puzzel
+
+% Representing the initial and goal states
+initial_state([1, 2, 3, 4, 5, 6, 7, 8, 0]).
+goal_state([1, 2, 3, 4, 5, 6, 7, 8, 0]).
+
+% Move the blank space left, right, up, or down
+move([A, B, C, D, E, F, G, H, 0], [A, B, C, D, 0, F, G, H, E]). % move blank space right
+move([A, B, C, D, E, F, G, H, 0], [A, B, C, D, E, F, 0, H, G]). % move blank space down
+move([A, B, C, D, E, F, G, 0, H], [A, B, C, D, E, F, 0, G, H]). % move blank space left
+move([A, B, C, D, E, F, 0, G, H], [A, B, C, D, 0, F, E, G, H]). % move blank space up
+
+% Solve the 8-puzzle using depth-first search
+solve(State, Path) :-
+    goal_state(Goal),
+    dfs(State, Goal, [State], Path).
+
+dfs(State, Goal, Path, Path) :- State = Goal.
+dfs(State, Goal, Visited, Path) :-
+    move(State, NextState),
+    \+ member(NextState, Visited),
+    dfs(NextState, Goal, [NextState | Visited], Path).
+
+% Sample query:
+% ?- initial_state(State), solve(State, Path).
+
+
+
+12. tower of hanoi
+
+% Tower of Hanoi simple solution
+hanoi(1, Src, Dest, _) :-  
+    write('Move disk from '), write(Src), write(' to '), write(Dest), nl.  
+
+hanoi(N, Src, Dest, Aux) :-  
+    N > 1,  
+    M is N - 1,  
+    hanoi(M, Src, Aux, Dest),  
+    hanoi(1, Src, Dest, _),  
+    hanoi(M, Aux, Dest, Src).  
+
+% Sample query:
+% ?- hanoi(3, 'A', 'C', 'B').
+
+
+13. tsp
+
+% Finding the shortest path in the Traveling Salesman Problem
+
+% Define paths with distances
+edge(a, b, 10). edge(a, c, 15). edge(a, d, 20).
+edge(b, a, 10). edge(b, c, 35). edge(b, d, 25).
+edge(c, a, 15). edge(c, b, 35). edge(c, d, 30).
+edge(d, a, 20). edge(d, b, 25). edge(d, c, 30).
+
+% Calculate the total cost of a given route
+path_cost([_], 0).
+path_cost([A, B | Rest], Cost) :-
+    edge(A, B, C),
+    path_cost([B | Rest], RestCost),
+    Cost is C + RestCost.
+
+% Find the shortest route
+tsp(Start, Route, MinCost) :-
+    findall([Cost, R], (permute([b, c, d], P), append([Start | P], [Start], R), path_cost(R, Cost)), Routes),
+    min_member([MinCost, Route], Routes).
+
+% Helper function to generate permutations
+permute([], []).
+permute(L, [H | T]) :-
+    select(H, L, R),
+    permute(R, T).
+
+% Sample query:
+% ?- tsp(a, Route, Cost).
+
+
+14. dfs
+
+edge(a, b). edge(a, c). edge(b, d). edge(b, e). edge(c, f). edge(e, f).
+
+% DFS traversal
+dfs(Start, Goal, Path) :- dfs_helper(Start, Goal, [Start], Path).
+
+dfs_helper(Goal, Goal, Path, Path).
+dfs_helper(Current, Goal, Visited, Path) :-
+    edge(Current, Next),
+    \+ member(Next, Visited), 
+    dfs_helper(Next, Goal, [Next | Visited], Path).
+
+% Sample query:
+% ?- dfs(a, f, Path).
+
+
+15.bfs
+
+edge(a, b). edge(a, c). edge(b, d). edge(b, e). edge(c, f). edge(e, f).
+
+% BFS traversal
+bfs(Start, Goal, Path) :- bfs_helper([[Start]], Goal, Path).
+
+bfs_helper([[Goal | Rest] | _], Goal, Path) :- 
+    reverse([Goal | Rest], Path).
+
+bfs_helper([[Current | Rest] | Queue], Goal, Path) :-
+    findall([Next, Current | Rest], 
+        (edge(Current, Next), \+ member(Next, [Current | Rest])), 
+        NewPaths),
+    append(Queue, NewPaths, NewQueue),
+    bfs_helper(NewQueue, Goal, Path).
+
+% Sample query:
+% ?- bfs(a, f, Path).
+
+
+16. hill climbing
+
+% Sample graph with heuristic values
+% Format: h(Node, Heuristic)
+h(a, 6). h(b, 4). h(c, 5). h(d, 2). h(e, 0). % 'e' is goal
+
+% Connections
+edge(a, b).
+edge(a, c).
+edge(b, d).
+edge(c, d).
+edge(d, e).
+
+% Hill Climbing algorithm
+hill_climb(Node, Goal, Path) :- 
+    hill_climb_util(Node, Goal, [Node], Path).
+
+hill_climb_util(Goal, Goal, Visited, Path) :- 
+    reverse(Visited, Path).
+
+hill_climb_util(Current, Goal, Visited, Path) :-
+    findall(Next, (edge(Current, Next), \+ member(Next, Visited)), Neighbors),
+    sort_neighbors_by_heuristic(Neighbors, Sorted),
+    Sorted = [Best | _],
+    hill_climb_util(Best, Goal, [Best | Visited], Path).
+
+% Sort neighbors by their heuristic value (ascending)
+sort_neighbors_by_heuristic(Neighbors, Sorted) :-
+    map_list_to_pairs(h, Neighbors, Pairs),
+    keysort(Pairs, SortedPairs),
+    pairs_values(SortedPairs, Sorted).
+
+% Sample query:
+% ?- hill_climb(a, e, Path).
+
+
+17. sort list 
+
+% sort/2 - removes duplicates and sorts
+sort_list(List, Sorted) :- sort(List, Sorted).
+
+% msort/2 - keeps duplicates and sorts
+sort_duplicate(List, Sorted) :- msort(List, Sorted).
+
+% Sample query:
+% ?- sort_list([3, 1, 2, 3, 4], S).
+% ?- sort_duplicate([3, 1, 2, 3, 4], S).
+
+
+
+
+		// EXPLAINATION
+
+
+
+1. Sum and Multiplication
+prolog
+Copy
+Edit
+addmul(X, Y) :-
+    S is X + Y,
+    M is X * Y,
+    write('Addition is: '), write(S), nl,
+    write('Multiplication is: '), write(M).
+
+How it works:
+When you call addmul(3, 4)., Prolog:
+
+Binds X=3, Y=4
+
+Computes S is 3 + 4 → S = 7
+
+Computes M is 3 * 4 → M = 12
+
+Prints both results.
+
+2. Sum of List
+prolog
+Copy
+Edit
+sum_list([], 0). % base case
+sum_list([H|T], Sum) :-
+    sum_list(T, Sum1),
+    Sum is H + Sum1.
+
+How it works:
+It breaks the list into head H and tail T.
+
+Base case: An empty list has sum 0.
+
+Recursive case: Sum is H + sum of T.
+
+Example:
+prolog
+Copy
+Edit
+sum_list([1,2,3], S).
+sum_list([1,2,3], S)
+
+→ H=1, T=[2,3], call sum_list([2,3], Sum1)
+
+→ H=2, T=[3], call sum_list([3], Sum2)
+
+→ H=3, T=[], call sum_list([], 0)
+
+Now backtrack and calculate:
+
+Sum3 = 0
+
+Sum2 = 3 + 0 = 3
+
+Sum1 = 2 + 3 = 5
+
+Sum = 1 + 5 = 6
+
+3. Maximum of List
+prolog
+Copy
+Edit
+max_list([X], X). % one element, it's the max
+max_list([H|T], Max) :-
+    max_list(T, Max1),
+    Max is max(H, Max1).
+
+How it works:
+Recursively finds the maximum in the tail.
+
+Compares head with tail's max using max/2.
+
+4. Count Elements
+prolog
+Copy
+Edit
+count([], 0).
+count([_|T], N) :-
+    count(T, N1),
+    N is N1 + 1.
+How it works:
+_ ignores the head.
+
+Just counts one per element.
+
+When list is empty, count is 0.
+
+5. Membership
+prolog
+Copy
+Edit
+member(X, [X|_]).
+member(X, [_|T]) :- member(X, T).
+
+How it works:
+Checks head first: if it matches X, success.
+
+If not, recursively check the tail.
+
+Example:
+prolog
+Copy
+Edit
+member(3, [1,2,3]).
+3 ≠ 1 → recurse
+
+3 ≠ 2 → recurse
+
+3 = 3 → success
+
+6. Reverse a List
+prolog
+Copy
+Edit
+reverse([], []).
+reverse([H|T], R) :-
+    reverse(T, RevT),
+    append(RevT, [H], R).
+
+How it works:
+Reverses the tail, then adds head at the end.
+
+Example:
+prolog
+Copy
+Edit
+reverse([1,2,3], R).
+reverse([1,2,3]) → reverse([2,3])
+→ reverse([3]) → reverse([]) → []
+→ append([], [3]) → [3]
+→ append([3], [2]) → [3,2]
+→ append([3,2], [1]) → [3,2,1]
+
+7. Union / Intersection
+prolog
+Copy
+Edit
+union([], L, L).
+union([H|T], L, [H|U]) :- \+ member(H, L), union(T, L, U).
+union([H|T], L, U) :- member(H, L), union(T, L, U).
+Union:
+Adds head to result only if it's not already in the second list.
+
+Skips if already present (no duplicates).
+
+Intersection:
+prolog
+Copy
+Edit
+intersection([], _, []).
+intersection([H|T], L, [H|I]) :- member(H, L), intersection(T, L, I).
+intersection([H|T], L, I) :- \+ member(H, L), intersection(T, L, I).
+Adds head if it's in both lists.
+
+8. GCD (Euclidean Algorithm)
+prolog
+Copy
+Edit
+gcd(A, 0, A).
+gcd(A, B, G) :- 
+    R is A mod B,
+    gcd(B, R, G).
+How it works:
+gcd(A, B) = gcd(B, A mod B)
+
+Repeat until remainder is 0.
+
+Example:
+prolog
+Copy
+Edit
+gcd(48, 18, G).
+gcd(48, 18) → R = 48 mod 18 = 12
+
+gcd(18, 12) → R = 6
+
+gcd(12, 6) → R = 0 → G = 6
+
+9. Odd / Even
+prolog
+Copy
+Edit
+even(X) :- X mod 2 =:= 0.
+odd(X) :- X mod 2 =\= 0.
+How it works:
+Uses modulo: X mod 2
+
+Even: remainder is 0
+
+Odd: remainder is not 0
+
+10. Four Queens Problem
+prolog
+Copy
+Edit
+fourQueens(Q1, Q2, Q3, Q4) :-
+    permutation([1,2,3,4], [Q1,Q2,Q3,Q4]),
+    safe(Q1, Q2, 1),
+    safe(Q1, Q3, 2),
+    safe(Q1, Q4, 3),
+    safe(Q2, Q3, 1),
+    safe(Q2, Q4, 2),
+    safe(Q3, Q4, 1).
+
+safe(X1, X2, D) :-
+    X1 =\= X2,
+    abs(X1 - X2) =\= D.
+How it works:
+Places 4 queens in 4 rows; ensures:
+
+All are in different columns (permutation).
+
+No two attack each other diagonally.
+
