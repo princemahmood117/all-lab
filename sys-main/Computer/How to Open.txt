@@ -4,6 +4,8 @@
 2. Then Press Build and Run [Press F9 Key]
 3. It will show the output
 
+
+// this is better way
 OR, 
 To create a Graphics project-
 
